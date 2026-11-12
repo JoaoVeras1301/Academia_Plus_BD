@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academia+ | Gestão de Funcionários</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-dumbbell"></i>
+                </div>
+                <div class="brand-title">Academia<span>+</span></div>
+            </div>
+
+            <nav class="nav-menu">
+                <div class="nav-section-title">Principal</div>
+                <a href="../index.html" class="nav-item">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
+                <a href="alunos.html" class="nav-item">
+                    <i class="fa-solid fa-users"></i> Alunos
+                </a>
+                <a href="planos.html" class="nav-item">
+                    <i class="fa-solid fa-layer-group"></i> Planos
+                </a>
+                <a href="matriculas.html" class="nav-item">
+                    <i class="fa-solid fa-id-card"></i> Matrículas
+                </a>
+                <a href="financeiro.html" class="nav-item">
+                    <i class="fa-solid fa-receipt"></i> Financeiro
+                </a>
+
+                <div class="nav-section-title" data-role="ADMINISTRADOR">Gestão & Auditoria</div>
+                <a href="funcionarios.html" class="nav-item active" data-role="ADMINISTRADOR">
+                    <i class="fa-solid fa-user-tie"></i> Funcionários
+                </a>
+                <a href="usuarios.html" class="nav-item" data-role="ADMINISTRADOR">
+                    <i class="fa-solid fa-user-shield"></i> Usuários
+                </a>
+                <a href="demonstracao.html" class="nav-item" data-role="ADMINISTRADOR">
+                    <i class="fa-solid fa-microchip"></i> Demonstração MySQL
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name">Carregando...</div>
+                        <div class="user-role">...</div>
+                    </div>
+                    <button class="btn btn-outline btn-sm btn-logout" title="Sair do Sistema">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main-wrapper">
+            <header class="header">
+                <h1 class="page-title">
+                    <i class="fa-solid fa-user-tie" style="color: var(--accent-green);"></i> Equipe de Funcionários
+                </h1>
+                <div class="header-actions">
+                    <button id="btn-novo-funcionario" class="btn btn-primary btn-sm">
+                        <i class="fa-solid fa-user-plus"></i> Novo Funcionário
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <div class="table-card">
+                    <div class="table-header">
+                        <div class="table-title">
+                            <i class="fa-solid fa-id-badge" style="color: var(--accent-green);"></i> Colaboradores Cadastrados
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>Cargo</th>
+                                    <th>CPF</th>
+                                    <th>Telefone</th>
+                                    <th>E-mail</th>
+                                    <th>Data Admissão</th>
+                                    <th>Situação</th>
+                                    <th style="text-align: right;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-funcionarios">
+                                <tr>
+                                    <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 32px;">
+                                        <i class="fa-solid fa-spinner fa-spin"></i> Carregando funcionários...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL DE FUNCIONÁRIO -->
+    <div id="modal-funcionario" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-func-titulo">Cadastrar Funcionário</h3>
+                <button type="button" class="btn-close" onclick="fecharModalFunc()">&times;</button>
+            </div>
+            <form id="form-funcionario">
+                <div class="modal-body">
+                    <input type="hidden" id="func-id">
+
+                    <div class="form-group">
+                        <label class="form-label" for="func-nome">Nome Completo *</label>
+                        <input type="text" id="func-nome" class="form-control" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="func-cargo">Cargo / Função *</label>
+                            <input type="text" id="func-cargo" class="form-control" placeholder="Ex: Recepcionista, Instrutor" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="func-cpf">CPF *</label>
+                            <input type="text" id="func-cpf" class="form-control" placeholder="000.000.000-00" required maxlength="14">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="func-telefone">Telefone</label>
+                            <input type="text" id="func-telefone" class="form-control" placeholder="(11) 90000-0000" maxlength="15">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="func-email">E-mail Corporativo</label>
+                            <input type="email" id="func-email" class="form-control" placeholder="nome@academia.com.br">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="func-contratacao">Data de Contratação *</label>
+                            <input type="date" id="func-contratacao" class="form-control" required>
+                        </div>
+                        <div class="form-group" id="group-func-ativo" style="display: none; align-self: center; margin-top: 20px;">
+                            <label class="form-label">
+                                <input type="checkbox" id="func-ativo" checked> Funcionário Ativo
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="fecharModalFunc()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-floppy-disk"></i> Salvar Funcionário
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        checkAuth(['ADMINISTRADOR']);
+
+        document.getElementById('func-cpf').addEventListener('input', (e) => {
+            e.target.value = formatCPF(e.target.value);
+        });
+        document.getElementById('func-telefone').addEventListener('input', (e) => {
+            e.target.value = formatTelefone(e.target.value);
+        });
+
+        const modalFunc = document.getElementById('modal-funcionario');
+        function fecharModalFunc() { modalFunc.classList.remove('active'); }
+
+        async function carregarFuncionarios() {
+            const tbody = document.getElementById('tabela-funcionarios');
+            try {
+                const data = await apiFetch('/funcionarios');
+                if (!data) return;
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: var(--text-muted); padding: 32px;">Nenhum funcionário cadastrado.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.map(f => `
+                    <tr>
+                        <td>#${f.id_funcionario}</td>
+                        <td><strong>${f.nome}</strong></td>
+                        <td><span class="badge badge-info">${f.cargo}</span></td>
+                        <td>${f.cpf}</td>
+                        <td>${f.telefone || '-'}</td>
+                        <td>${f.email || '-'}</td>
+                        <td>${formatData(f.data_contratacao)}</td>
+                        <td>
+                            <span class="badge ${f.ativo ? 'badge-success' : 'badge-danger'}">
+                                ${f.ativo ? 'ATIVO' : 'INATIVO'}
+                            </span>
+                        </td>
+                        <td style="text-align: right; white-space: nowrap;">
+                            <button class="btn btn-outline btn-sm" onclick="abrirEdicao(${f.id_funcionario})" title="Editar">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button class="btn btn-sm ${f.ativo ? 'btn-danger' : 'btn-primary'}" onclick="alternarStatus(${f.id_funcionario})" title="${f.ativo ? 'Desativar' : 'Ativar'}">
+                                <i class="fa-solid ${f.ativo ? 'fa-ban' : 'fa-check'}"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--accent-red); padding: 24px;">${err.message}</td></tr>`;
+            }
+        }
+
+        document.getElementById('btn-novo-funcionario').addEventListener('click', () => {
+            document.getElementById('form-funcionario').reset();
+            document.getElementById('func-id').value = '';
+            document.getElementById('modal-func-titulo').textContent = 'Cadastrar Funcionário';
+            document.getElementById('group-func-ativo').style.display = 'none';
+            modalFunc.classList.add('active');
+        });
+
+        async function abrirEdicao(id) {
+            try {
+                const f = await apiFetch(`/funcionarios/${id}`);
+                if (!f) return;
+
+                document.getElementById('func-id').value = f.id_funcionario;
+                document.getElementById('func-nome').value = f.nome;
+                document.getElementById('func-cargo').value = f.cargo;
+                document.getElementById('func-cpf').value = f.cpf;
+                document.getElementById('func-telefone').value = f.telefone || '';
+                document.getElementById('func-email').value = f.email || '';
+                document.getElementById('func-contratacao').value = f.data_contratacao ? f.data_contratacao.substring(0, 10) : '';
+                document.getElementById('func-ativo').checked = !!f.ativo;
+
+                document.getElementById('modal-func-titulo').textContent = `Editar Funcionário #${f.id_funcionario}`;
+                document.getElementById('group-func-ativo').style.display = 'block';
+                modalFunc.classList.add('active');
+            } catch (err) {
+                alert('Erro ao buscar dados do funcionário: ' + err.message);
+            }
+        }
+
+        document.getElementById('form-funcionario').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('func-id').value;
+            const payload = {
+                nome: document.getElementById('func-nome').value,
+                cargo: document.getElementById('func-cargo').value,
+                cpf: document.getElementById('func-cpf').value,
+                telefone: document.getElementById('func-telefone').value,
+                email: document.getElementById('func-email').value,
+                data_contratacao: document.getElementById('func-contratacao').value
+            };
+
+            try {
+                if (id) {
+                    payload.ativo = document.getElementById('func-ativo').checked;
+                    await apiFetch(`/funcionarios/${id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(payload)
+                    });
+                    alert('Funcionário atualizado com sucesso!');
+                } else {
+                    await apiFetch('/funcionarios', {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                    alert('Funcionário cadastrado com sucesso!');
+                }
+
+                fecharModalFunc();
+                carregarFuncionarios();
+            } catch (err) {
+                alert('Erro: ' + err.message);
+            }
+        });
+
+        async function alternarStatus(id) {
+            if (!confirm('Deseja realmente alterar o status deste funcionário?')) return;
+            try {
+                await apiFetch(`/funcionarios/${id}/status`, { method: 'PATCH' });
+                carregarFuncionarios();
+            } catch (err) {
+                alert('Erro: ' + err.message);
+            }
+        }
+
+        carregarFuncionarios();
+    </script>
+</body>
+</html>

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academia+ | Gestão de Alunos</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-dumbbell"></i>
+                </div>
+                <div class="brand-title">Academia<span>+</span></div>
+            </div>
+
+            <nav class="nav-menu">
+                <div class="nav-section-title">Principal</div>
+                <a href="../index.html" class="nav-item">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
+                <a href="alunos.html" class="nav-item active">
+                    <i class="fa-solid fa-users"></i> Alunos
+                </a>
+                <a href="planos.html" class="nav-item">
+                    <i class="fa-solid fa-layer-group"></i> Planos
+                </a>
+                <a href="matriculas.html" class="nav-item">
+                    <i class="fa-solid fa-id-card"></i> Matrículas
+                </a>
+                <a href="financeiro.html" class="nav-item">
+                    <i class="fa-solid fa-receipt"></i> Financeiro
+                </a>
+
+                <div class="nav-section-title" data-role="ADMINISTRADOR">Gestão & Auditoria</div>
+                <a href="funcionarios.html" class="nav-item" data-role="ADMINISTRADOR">
+                    <i class="fa-solid fa-user-tie"></i> Funcionários
+                </a>
+                <a href="usuarios.html" class="nav-item" data-role="ADMINISTRADOR">
+                    <i class="fa-solid fa-user-shield"></i> Usuários
+                </a>
+                <a href="demonstracao.html" class="nav-item" data-role="ADMINISTRADOR">
+                    <i class="fa-solid fa-microchip"></i> Demonstração MySQL
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name">Carregando...</div>
+                        <div class="user-role">...</div>
+                    </div>
+                    <button class="btn btn-outline btn-sm btn-logout" title="Sair do Sistema">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main-wrapper">
+            <header class="header">
+                <h1 class="page-title">
+                    <i class="fa-solid fa-users" style="color: var(--accent-green);"></i> Alunos Cadastrados
+                </h1>
+                <div class="header-actions">
+                    <button id="btn-novo-aluno" class="btn btn-primary btn-sm">
+                        <i class="fa-solid fa-user-plus"></i> Novo Aluno
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <!-- BARRA DE PESQUISA E FILTROS -->
+                <div class="table-card" style="margin-bottom: 20px;">
+                    <div class="table-header">
+                        <div class="filter-bar" style="width: 100%;">
+                            <div class="search-input" style="flex: 1;">
+                                <input type="text" id="filtro-busca" class="form-control" placeholder="Buscar por Nome, CPF ou Código...">
+                            </div>
+                            <div style="min-width: 160px;">
+                                <select id="filtro-status" class="form-control">
+                                    <option value="">Todos os Status</option>
+                                    <option value="1">Apenas Ativos</option>
+                                    <option value="0">Apenas Inativos</option>
+                                </select>
+                            </div>
+                            <button id="btn-filtrar" class="btn btn-secondary">
+                                <i class="fa-solid fa-magnifying-glass"></i> Filtrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABELA DE ALUNOS -->
+                <div class="table-card">
+                    <div class="table-header">
+                        <div class="table-title">
+                            <i class="fa-solid fa-list-check" style="color: var(--accent-green);"></i> Base de Alunos (<span id="total-alunos">0</span>)
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Cód. Negócio</th>
+                                    <th>Nome do Aluno</th>
+                                    <th>CPF</th>
+                                    <th>Telefone</th>
+                                    <th>E-mail</th>
+                                    <th>Situação</th>
+                                    <th>Matrículas Ativas</th>
+                                    <th style="text-align: right;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-alunos">
+                                <tr>
+                                    <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 32px;">
+                                        <i class="fa-solid fa-spinner fa-spin"></i> Carregando alunos...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL DE CADASTRO / EDIÇÃO DE ALUNO -->
+    <div id="modal-aluno" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-aluno-titulo">Cadastrar Novo Aluno</h3>
+                <button type="button" class="btn-close" onclick="fecharModalAluno()">&times;</button>
+            </div>
+            <form id="form-aluno">
+                <div class="modal-body">
+                    <input type="hidden" id="aluno-id">
+
+                    <div class="form-group">
+                        <label class="form-label" for="aluno-nome">Nome Completo *</label>
+                        <input type="text" id="aluno-nome" class="form-control" placeholder="Ex: Lucas Gabriel Oliveira" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="aluno-cpf">CPF *</label>
+                            <input type="text" id="aluno-cpf" class="form-control" placeholder="000.000.000-00" required maxlength="14">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="aluno-telefone">Telefone</label>
+                            <input type="text" id="aluno-telefone" class="form-control" placeholder="(11) 90000-0000" maxlength="15">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="aluno-email">E-mail</label>
+                            <input type="email" id="aluno-email" class="form-control" placeholder="aluno@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="aluno-nascimento">Data de Nascimento</label>
+                            <input type="date" id="aluno-nascimento" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="aluno-endereco">Endereço Residencial</label>
+                        <input type="text" id="aluno-endereco" class="form-control" placeholder="Rua, número, bairro e cidade">
+                    </div>
+
+                    <div class="form-group" id="group-ativo" style="display: none;">
+                        <label class="form-label">
+                            <input type="checkbox" id="aluno-ativo" checked> Aluno Ativo no Sistema
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="fecharModalAluno()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btn-salvar-aluno">
+                        <i class="fa-solid fa-floppy-disk"></i> Salvar Aluno
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL DE DETALHES DO ALUNO -->
+    <div id="modal-detalhes" class="modal-overlay">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Ficha Cadastral do Aluno</h3>
+                <button type="button" class="btn-close" onclick="fecharModalDetalhes()">&times;</button>
+            </div>
+            <div class="modal-body" id="detalhes-conteudo">
+                Carregando...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="fecharModalDetalhes()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        // Máscaras de entrada em tempo real
+        document.getElementById('aluno-cpf').addEventListener('input', (e) => {
+            e.target.value = formatCPF(e.target.value);
+        });
+        document.getElementById('aluno-telefone').addEventListener('input', (e) => {
+            e.target.value = formatTelefone(e.target.value);
+        });
+
+        async function carregarAlunos() {
+            const busca = document.getElementById('filtro-busca').value;
+            const status = document.getElementById('filtro-status').value;
+            const tbody = document.getElementById('tabela-alunos');
+
+            try {
+                let url = '/alunos?';
+                if (busca) url += `busca=${encodeURIComponent(busca)}&`;
+                if (status !== '') url += `ativo=${encodeURIComponent(status)}&`;
+
+                const data = await apiFetch(url);
+                if (!data) return;
+
+                document.getElementById('total-alunos').textContent = data.length;
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 32px;">Nenhum aluno encontrado.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.map(a => `
+                    <tr>
+                        <td><strong>${a.codigo_aluno}</strong></td>
+                        <td>${a.nome}</td>
+                        <td>${a.cpf}</td>
+                        <td>${a.telefone || '-'}</td>
+                        <td>${a.email || '-'}</td>
+                        <td>
+                            <span class="badge ${a.ativo ? 'badge-success' : 'badge-danger'}">
+                                ${a.ativo ? 'ATIVO' : 'INATIVO'}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge ${a.matriculas_ativas > 0 ? 'badge-info' : 'badge-secondary'}">
+                                ${a.matriculas_ativas} ativa(s)
+                            </span>
+                        </td>
+                        <td style="text-align: right; white-space: nowrap;">
+                            <button class="btn btn-outline btn-sm" onclick="verDetalhes(${a.id_aluno})" title="Ver Detalhes">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <button class="btn btn-outline btn-sm" onclick="abrirEdicao(${a.id_aluno})" title="Editar">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button class="btn btn-sm ${a.ativo ? 'btn-danger' : 'btn-primary'}" onclick="alternarStatus(${a.id_aluno})" title="${a.ativo ? 'Desativar' : 'Ativar'}">
+                                <i class="fa-solid ${a.ativo ? 'fa-ban' : 'fa-check'}"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--accent-red); padding: 24px;">${err.message}</td></tr>`;
+            }
+        }
+
+        document.getElementById('btn-filtrar').addEventListener('click', carregarAlunos);
+        document.getElementById('filtro-busca').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') carregarAlunos();
+        });
+
+        // Controle dos Modais
+        const modalAluno = document.getElementById('modal-aluno');
+        const modalDetalhes = document.getElementById('modal-detalhes');
+
+        function fecharModalAluno() {
+            modalAluno.classList.remove('active');
+        }
+
+        function fecharModalDetalhes() {
+            modalDetalhes.classList.remove('active');
+        }
+
+        document.getElementById('btn-novo-aluno').addEventListener('click', () => {
+            document.getElementById('form-aluno').reset();
+            document.getElementById('aluno-id').value = '';
+            document.getElementById('modal-aluno-titulo').textContent = 'Cadastrar Novo Aluno';
+            document.getElementById('group-ativo').style.display = 'none';
+            modalAluno.classList.add('active');
+        });
+
+        async function abrirEdicao(id) {
+            try {
+                const aluno = await apiFetch(`/alunos/${id}`);
+                if (!aluno) return;
+
+                document.getElementById('aluno-id').value = aluno.id_aluno;
+                document.getElementById('aluno-nome').value = aluno.nome;
+                document.getElementById('aluno-cpf').value = aluno.cpf;
+                document.getElementById('aluno-telefone').value = aluno.telefone || '';
+                document.getElementById('aluno-email').value = aluno.email || '';
+                document.getElementById('aluno-nascimento').value = aluno.data_nascimento ? aluno.data_nascimento.substring(0, 10) : '';
+                document.getElementById('aluno-endereco').value = aluno.endereco || '';
+                document.getElementById('aluno-ativo').checked = !!aluno.ativo;
+
+                document.getElementById('modal-aluno-titulo').textContent = `Editar Aluno #${aluno.codigo_aluno}`;
+                document.getElementById('group-ativo').style.display = 'block';
+                modalAluno.classList.add('active');
+            } catch (err) {
+                alert('Erro ao carregar dados do aluno: ' + err.message);
+            }
+        }
+
+        document.getElementById('form-aluno').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('aluno-id').value;
+            const payload = {
+                nome: document.getElementById('aluno-nome').value,
+                cpf: document.getElementById('aluno-cpf').value,
+                telefone: document.getElementById('aluno-telefone').value,
+                email: document.getElementById('aluno-email').value,
+                data_nascimento: document.getElementById('aluno-nascimento').value || null,
+                endereco: document.getElementById('aluno-endereco').value
+            };
+
+            try {
+                if (id) {
+                    payload.ativo = document.getElementById('aluno-ativo').checked;
+                    await apiFetch(`/alunos/${id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(payload)
+                    });
+                    alert('Dados do aluno atualizados com sucesso!');
+                } else {
+                    await apiFetch('/alunos', {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                    alert('Aluno cadastrado com sucesso! Código gerado por Trigger no MySQL.');
+                }
+
+                fecharModalAluno();
+                carregarAlunos();
+            } catch (err) {
+                alert('Erro: ' + err.message);
+            }
+        });
+
+        async function alternarStatus(id) {
+            if (!confirm('Deseja realmente alterar o status deste aluno?')) return;
+            try {
+                await apiFetch(`/alunos/${id}/status`, { method: 'PATCH' });
+                carregarAlunos();
+            } catch (err) {
+                alert('Erro ao alterar status: ' + err.message);
+            }
+        }
+
+        async function verDetalhes(id) {
+            try {
+                const a = await apiFetch(`/alunos/${id}`);
+                if (!a) return;
+
+                let matriculasHtml = '';
+                if (a.matriculas && a.matriculas.length > 0) {
+                    matriculasHtml = a.matriculas.map(m => `
+                        <tr>
+                            <td><strong>${m.codigo_matricula}</strong></td>
+                            <td>${m.plano_nome}</td>
+                            <td>${formatData(m.data_inicio)} até ${formatData(m.data_fim)}</td>
+                            <td>${formatMoeda(m.valor_contratado)}</td>
+                            <td><span class="badge badge-${m.status.toLowerCase()}">${m.status}</span></td>
+                        </tr>
+                    `).join('');
+                } else {
+                    matriculasHtml = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 12px;">Nenhuma matrícula vinculada.</td></tr>';
+                }
+
+                document.getElementById('detalhes-conteudo').innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                        <div>
+                            <div class="form-label">Código de Negócio</div>
+                            <div style="font-weight: 700; color: var(--accent-green); font-size: 16px;">${a.codigo_aluno}</div>
+                        </div>
+                        <div>
+                            <div class="form-label">Nome Completo</div>
+                            <div style="font-weight: 600;">${a.nome}</div>
+                        </div>
+                        <div>
+                            <div class="form-label">CPF</div>
+                            <div>${a.cpf}</div>
+                        </div>
+                        <div>
+                            <div class="form-label">Telefone</div>
+                            <div>${a.telefone || '-'}</div>
+                        </div>
+                        <div>
+                            <div class="form-label">E-mail</div>
+                            <div>${a.email || '-'}</div>
+                        </div>
+                        <div>
+                            <div class="form-label">Data de Nascimento</div>
+                            <div>${formatData(a.data_nascimento)}</div>
+                        </div>
+                        <div>
+                            <div class="form-label">Endereço</div>
+                            <div>${a.endereco || '-'}</div>
+                        </div>
+                        <div>
+                            <div class="form-label">Situação Cadastral</div>
+                            <div><span class="badge ${a.ativo ? 'badge-success' : 'badge-danger'}">${a.ativo ? 'ATIVO' : 'INATIVO'}</span></div>
+                        </div>
+                    </div>
+
+                    <h4 style="margin-bottom: 12px; font-weight: 700; color: var(--text-primary);">
+                        <i class="fa-solid fa-id-card"></i> Histórico de Matrículas do Aluno
+                    </h4>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Cód. Matrícula</th>
+                                    <th>Plano</th>
+                                    <th>Vigência</th>
+                                    <th>Valor</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>${matriculasHtml}</tbody>
+                        </table>
+                    </div>
+                `;
+
+                modalDetalhes.classList.add('active');
+            } catch (err) {
+                alert('Erro ao carregar detalhes: ' + err.message);
+            }
+        }
+
+        // Carrega alunos inicialmente
+        carregarAlunos();
+    </script>
+</body>
+</html>

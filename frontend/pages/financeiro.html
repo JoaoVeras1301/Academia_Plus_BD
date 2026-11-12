@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academia+ | Gestão Financeira</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-dumbbell"></i>
+                </div>
+                <div class="brand-title">Academia<span>+</span></div>
+            </div>
+
+            <nav class="nav-menu">
+                <div class="nav-section-title">Principal</div>
+                <a href="../index.html" class="nav-item">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
+                <a href="alunos.html" class="nav-item">
+                    <i class="fa-solid fa-users"></i> Alunos
+                </a>
+                <a href="planos.html" class="nav-item">
+                    <i class="fa-solid fa-layer-group"></i> Planos
+                </a>
+                <a href="matriculas.html" class="nav-item">
+                    <i class="fa-solid fa-id-card"></i> Matrículas
+                </a>
+                <a href="financeiro.html" class="nav-item active">
+                    <i class="fa-solid fa-receipt"></i> Financeiro
+                </a>
+
+                <div class="nav-section-title" data-role="ADMINISTRADOR">Gestão & Auditoria</div>
+                <a href="funcionarios.html" class="nav-item" data-role="ADMINISTRADOR">
+                    <i class="fa-solid fa-user-tie"></i> Funcionários
+                </a>
+                <a href="usuarios.html" class="nav-item" data-role="ADMINISTRADOR">
+                    <i class="fa-solid fa-user-shield"></i> Usuários
+                </a>
+                <a href="demonstracao.html" class="nav-item" data-role="ADMINISTRADOR">
+                    <i class="fa-solid fa-microchip"></i> Demonstração MySQL
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name">Carregando...</div>
+                        <div class="user-role">...</div>
+                    </div>
+                    <button class="btn btn-outline btn-sm btn-logout" title="Sair do Sistema">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main-wrapper">
+            <header class="header">
+                <h1 class="page-title">
+                    <i class="fa-solid fa-receipt" style="color: var(--accent-green);"></i> Módulo Financeiro
+                </h1>
+            </header>
+
+            <div class="content-body">
+                <!-- NAVEGAÇÃO POR ABAS -->
+                <div style="display: flex; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+                    <button class="btn btn-primary" id="tab-btn-mensalidades" onclick="mudarAba('mensalidades')">
+                        <i class="fa-solid fa-file-invoice-dollar"></i> Todas as Mensalidades
+                    </button>
+                    <button class="btn btn-outline" id="tab-btn-view" onclick="mudarAba('view')">
+                        <i class="fa-solid fa-eye"></i> View do MySQL (vw_mensalidades_pendentes)
+                    </button>
+                    <button class="btn btn-outline" id="tab-btn-pagamentos" onclick="mudarAba('pagamentos')">
+                        <i class="fa-solid fa-clock-rotate-left"></i> Histórico de Pagamentos
+                    </button>
+                </div>
+
+                <!-- ABA 1: TODAS AS MENSALIDADES -->
+                <div id="aba-mensalidades">
+                    <div class="table-card" style="margin-bottom: 20px;">
+                        <div class="table-header">
+                            <div class="filter-bar" style="width: 100%;">
+                                <div class="search-input" style="flex: 1;">
+                                    <input type="text" id="filtro-aluno-mens" class="form-control" placeholder="Buscar por Nome do Aluno ou CPF...">
+                                </div>
+                                <div style="min-width: 180px;">
+                                    <select id="filtro-status-mens" class="form-control">
+                                        <option value="">Todos os Status</option>
+                                        <option value="PENDENTE">Pendentes no Prazo</option>
+                                        <option value="ATRASADA">Em Atraso (Vencidas)</option>
+                                        <option value="PARCIAL">Parcialmente Pagas</option>
+                                        <option value="PAGA">Totalmente Pagas</option>
+                                        <option value="CANCELADA">Canceladas</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-secondary" onclick="carregarMensalidades()">
+                                    <i class="fa-solid fa-filter"></i> Filtrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-card">
+                        <div class="table-header">
+                            <div class="table-title">
+                                <i class="fa-solid fa-list-numeric" style="color: var(--accent-green);"></i> Parcelas Emitidas
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Aluno</th>
+                                        <th>Plano / Matrícula</th>
+                                        <th>Parcela</th>
+                                        <th>Vencimento</th>
+                                        <th>Valor Nominal</th>
+                                        <th>Valor Pago</th>
+                                        <th>Saldo Devedor</th>
+                                        <th>Situação</th>
+                                        <th style="text-align: right;">Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabela-mensalidades">
+                                    <tr>
+                                        <td colspan="10" style="text-align: center; color: var(--text-muted); padding: 32px;">
+                                            <i class="fa-solid fa-spinner fa-spin"></i> Carregando mensalidades...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ABA 2: CONSULTA DIRETA DA VIEW DO MYSQL -->
+                <div id="aba-view" style="display: none;">
+                    <div class="alert alert-info">
+                        <i class="fa-solid fa-database"></i> <strong>Exibição da View <code>vw_mensalidades_pendentes</code>:</strong>
+                        Esta tabela consome em tempo real a View SQL criada no banco de dados, calculando dinamicamente parcelas pendentes, saldos e situação de atraso.
+                    </div>
+
+                    <div class="table-card">
+                        <div class="table-header">
+                            <div class="table-title">
+                                <i class="fa-solid fa-table" style="color: var(--accent-green);"></i> Registros da View vw_mensalidades_pendentes
+                            </div>
+                            <button class="btn btn-outline btn-sm" onclick="carregarViewPendentes()">
+                                <i class="fa-solid fa-rotate"></i> Atualizar View
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Nome do Aluno</th>
+                                        <th>Plano</th>
+                                        <th>Parcela</th>
+                                        <th>Valor</th>
+                                        <th>Valor Pago</th>
+                                        <th>Saldo</th>
+                                        <th>Vencimento</th>
+                                        <th>Situação Financeira</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabela-view-pendentes">
+                                    <tr>
+                                        <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 32px;">
+                                            <i class="fa-solid fa-spinner fa-spin"></i> Consultando View no MySQL...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ABA 3: HISTÓRICO DE PAGAMENTOS -->
+                <div id="aba-pagamentos" style="display: none;">
+                    <div class="table-card">
+                        <div class="table-header">
+                            <div class="table-title">
+                                <i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-green);"></i> Histórico de Transações de Pagamento
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID Pagto</th>
+                                        <th>Aluno</th>
+                                        <th>Contrato / Parcela</th>
+                                        <th>Data/Hora Pagamento</th>
+                                        <th>Valor Quitado</th>
+                                        <th>Forma de Pagamento</th>
+                                        <th>Observação</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabela-historico-pagamentos">
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 32px;">
+                                            <i class="fa-solid fa-spinner fa-spin"></i> Carregando histórico...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL DE REGISTRAR PAGAMENTO -->
+    <div id="modal-pagamento" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fa-solid fa-hand-holding-dollar" style="color: var(--accent-green);"></i> Registrar Pagamento
+                </h3>
+                <button type="button" class="btn-close" onclick="fecharModalPagamento()">&times;</button>
+            </div>
+            <form id="form-pagamento">
+                <div class="modal-body">
+                    <input type="hidden" id="pag-id-mensalidade">
+
+                    <div class="alert alert-info" style="font-size: 13px;">
+                        <i class="fa-solid fa-shield-halved"></i> Executa a procedure <code>sp_registrar_pagamento</code> com validação de concorrência, limite de saldo e acionamento de Triggers automáticas.
+                    </div>
+
+                    <div style="background-color: var(--bg-primary); padding: 16px; border-radius: var(--radius-sm); margin-bottom: 16px;">
+                        <div style="font-size: 12px; color: var(--text-muted);">ALUNO / PARCELA</div>
+                        <div id="pag-info-aluno" style="font-weight: 700; font-size: 15px; color: var(--text-primary);">-</div>
+                        
+                        <div style="display: flex; gap: 24px; margin-top: 10px;">
+                            <div>
+                                <span style="font-size: 11px; color: var(--text-secondary);">VALOR TOTAL:</span>
+                                <div id="pag-info-total" style="font-weight: bold;">R$ 0,00</div>
+                            </div>
+                            <div>
+                                <span style="font-size: 11px; color: var(--text-secondary);">JÁ PAGO:</span>
+                                <div id="pag-info-pago" style="font-weight: bold; color: var(--accent-green);">R$ 0,00</div>
+                            </div>
+                            <div>
+                                <span style="font-size: 11px; color: var(--text-secondary);">SALDO RESTANTE:</span>
+                                <div id="pag-info-saldo" style="font-weight: 800; color: var(--accent-amber);">R$ 0,00</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="pag-valor">Valor a Pagar (R$) *</label>
+                            <input type="number" id="pag-valor" class="form-control" step="0.01" min="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="pag-forma">Forma de Pagamento *</label>
+                            <select id="pag-forma" class="form-control" required>
+                                <option value="PIX">PIX</option>
+                                <option value="CARTAO_CREDITO">Cartão de Crédito</option>
+                                <option value="CARTAO_DEBITO">Cartão de Débito</option>
+                                <option value="DINHEIRO">Dinheiro</option>
+                                <option value="BOLETO">Boleto</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="pag-observacao">Observação / Comprovante</label>
+                        <input type="text" id="pag-observacao" class="form-control" placeholder="Ex: Pago no balcão / Autorização 123456">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="fecharModalPagamento()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btn-confirmar-pagamento">
+                        <i class="fa-solid fa-receipt"></i> Efetivar Pagamento (Procedure)
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        const modalPag = document.getElementById('modal-pagamento');
+        function fecharModalPagamento() { modalPag.classList.remove('active'); }
+
+        function mudarAba(aba) {
+            document.getElementById('aba-mensalidades').style.display = aba === 'mensalidades' ? 'block' : 'none';
+            document.getElementById('aba-view').style.display = aba === 'view' ? 'block' : 'none';
+            document.getElementById('aba-pagamentos').style.display = aba === 'pagamentos' ? 'block' : 'none';
+
+            document.getElementById('tab-btn-mensalidades').className = aba === 'mensalidades' ? 'btn btn-primary' : 'btn btn-outline';
+            document.getElementById('tab-btn-view').className = aba === 'view' ? 'btn btn-primary' : 'btn btn-outline';
+            document.getElementById('tab-btn-pagamentos').className = aba === 'pagamentos' ? 'btn btn-primary' : 'btn btn-outline';
+
+            if (aba === 'mensalidades') carregarMensalidades();
+            if (aba === 'view') carregarViewPendentes();
+            if (aba === 'pagamentos') carregarHistoricoPagamentos();
+        }
+
+        async function carregarMensalidades() {
+            const status = document.getElementById('filtro-status-mens').value;
+            const aluno = document.getElementById('filtro-aluno-mens').value;
+            const tbody = document.getElementById('tabela-mensalidades');
+
+            try {
+                let url = '/mensalidades?';
+                if (status) url += `status=${encodeURIComponent(status)}&`;
+                if (aluno) url += `aluno=${encodeURIComponent(aluno)}&`;
+
+                const data = await apiFetch(url);
+                if (!data) return;
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; color: var(--text-muted); padding: 32px;">Nenhuma mensalidade encontrada para os filtros selecionados.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.map(m => {
+                    const isVencida = m.status === 'PENDENTE' && new Date(m.data_vencimento) < new Date().setHours(0,0,0,0);
+                    const statusBadgeClass = isVencida ? 'badge-danger' : `badge-${m.status.toLowerCase()}`;
+                    const statusText = isVencida ? 'ATRASADA' : m.status;
+
+                    return `
+                        <tr>
+                            <td>#${m.id_mensalidade}</td>
+                            <td><strong>${m.aluno_nome}</strong></td>
+                            <td>${m.plano_nome} <small style="color: var(--text-muted);">(${m.codigo_matricula})</small></td>
+                            <td>Parcela ${m.numero_parcela}</td>
+                            <td>${formatData(m.data_vencimento)}</td>
+                            <td>${formatMoeda(m.valor)}</td>
+                            <td>${formatMoeda(m.valor_pago)}</td>
+                            <td><strong style="color: ${m.saldo > 0 ? 'var(--accent-amber)' : 'var(--accent-green)'};">${formatMoeda(m.saldo)}</strong></td>
+                            <td><span class="badge ${statusBadgeClass}">${statusText}</span></td>
+                            <td style="text-align: right;">
+                                ${m.status !== 'PAGA' && m.status !== 'CANCELADA' ? `
+                                    <button class="btn btn-primary btn-sm" onclick="abrirModalPagamento(${m.id_mensalidade})" title="Pagar Parcela">
+                                        <i class="fa-solid fa-dollar-sign"></i> Pagar
+                                    </button>
+                                ` : '-'}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: var(--accent-red); padding: 24px;">${err.message}</td></tr>`;
+            }
+        }
+
+        async function carregarViewPendentes() {
+            const tbody = document.getElementById('tabela-view-pendentes');
+            try {
+                const data = await apiFetch('/mensalidades/pendentes-view');
+                if (!data) return;
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 32px;">Nenhuma mensalidade pendente na View. Tudo quitado!</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.map(v => `
+                    <tr>
+                        <td><strong>${v.nome_aluno}</strong></td>
+                        <td><span class="badge badge-info">${v.nome_plano}</span></td>
+                        <td>Parcela ${v.numero_parcela}</td>
+                        <td>${formatMoeda(v.valor)}</td>
+                        <td>${formatMoeda(v.valor_pago)}</td>
+                        <td><strong style="color: var(--accent-amber);">${formatMoeda(v.saldo)}</strong></td>
+                        <td>${formatData(v.data_vencimento)}</td>
+                        <td>
+                            <span class="badge ${v.situacao_financeira === 'ATRASADA' ? 'badge-danger' : 'badge-warning'}">
+                                ${v.situacao_financeira}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--accent-red); padding: 24px;">${err.message}</td></tr>`;
+            }
+        }
+
+        async function carregarHistoricoPagamentos() {
+            const tbody = document.getElementById('tabela-historico-pagamentos');
+            try {
+                const data = await apiFetch('/pagamentos');
+                if (!data) return;
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 32px;">Nenhum pagamento registrado até o momento.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.map(p => `
+                    <tr>
+                        <td>#${p.id_pagamento}</td>
+                        <td><strong>${p.aluno_nome}</strong></td>
+                        <td>${p.plano_nome} (Parc. ${p.numero_parcela})</td>
+                        <td>${new Date(p.data_pagamento).toLocaleString('pt-BR')}</td>
+                        <td><strong style="color: var(--accent-green);">${formatMoeda(p.valor)}</strong></td>
+                        <td><span class="badge badge-info">${p.forma_pagamento.replace('_', ' ')}</span></td>
+                        <td>${p.observacao || '-'}</td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--accent-red); padding: 24px;">${err.message}</td></tr>`;
+            }
+        }
+
+        async function abrirModalPagamento(idMensalidade) {
+            try {
+                const m = await apiFetch(`/mensalidades/${idMensalidade}`);
+                if (!m) return;
+
+                document.getElementById('pag-id-mensalidade').value = m.id_mensalidade;
+                document.getElementById('pag-info-aluno').textContent = `${m.aluno_nome} — ${m.plano_nome} (Parcela ${m.numero_parcela})`;
+                document.getElementById('pag-info-total').textContent = formatMoeda(m.valor);
+                document.getElementById('pag-info-pago').textContent = formatMoeda(m.valor_pago);
+                document.getElementById('pag-info-saldo').textContent = formatMoeda(m.saldo);
+
+                // Sugere pagamento do saldo restante
+                document.getElementById('pag-valor').value = m.saldo.toFixed(2);
+                document.getElementById('pag-valor').max = m.saldo.toFixed(2);
+                document.getElementById('pag-observacao').value = '';
+
+                modalPag.classList.add('active');
+            } catch (err) {
+                alert('Erro ao carregar dados da mensalidade: ' + err.message);
+            }
+        }
+
+        document.getElementById('form-pagamento').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-confirmar-pagamento');
+            const idMensalidade = parseInt(document.getElementById('pag-id-mensalidade').value);
+            const valor = parseFloat(document.getElementById('pag-valor').value);
+            const formaPagamento = document.getElementById('pag-forma').value;
+            const observacao = document.getElementById('pag-observacao').value;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processando no MySQL...';
+
+            try {
+                const res = await apiFetch('/pagamentos', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        id_mensalidade: idMensalidade,
+                        valor: valor,
+                        forma_pagamento: formaPagamento,
+                        observacao: observacao
+                    })
+                });
+
+                alert(`Pagamento ID #${res.id_pagamento} registrado com sucesso!\nA trigger de atualização de status e auditoria foi executada.`);
+                fecharModalPagamento();
+                carregarMensalidades();
+            } catch (err) {
+                alert('Falha ao processar pagamento: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-receipt"></i> Efetivar Pagamento (Procedure)';
+            }
+        });
+
+        // Inicialização
+        carregarMensalidades();
+    </script>
+</body>
+</html>

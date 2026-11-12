@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academia+ | Gestão de Usuários</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-dumbbell"></i>
+                </div>
+                <div class="brand-title">Academia<span>+</span></div>
+            </div>
+
+            <nav class="nav-menu">
+                <div class="nav-section-title">Principal</div>
+                <a href="../index.html" class="nav-item">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
+                <a href="alunos.html" class="nav-item">
+                    <i class="fa-solid fa-users"></i> Alunos
+                </a>
+                <a href="planos.html" class="nav-item">
+                    <i class="fa-solid fa-layer-group"></i> Planos
+                </a>
+                <a href="matriculas.html" class="nav-item">
+                    <i class="fa-solid fa-id-card"></i> Matrículas
+                </a>
+                <a href="financeiro.html" class="nav-item">
+                    <i class="fa-solid fa-receipt"></i> Financeiro
+                </a>
+
+                <div class="nav-section-title" data-role="ADMINISTRADOR">Gestão & Auditoria</div>
+                <a href="funcionarios.html" class="nav-item" data-role="ADMINISTRADOR">
+                    <i class="fa-solid fa-user-tie"></i> Funcionários
+                </a>
+                <a href="usuarios.html" class="nav-item active" data-role="ADMINISTRADOR">
+                    <i class="fa-solid fa-user-shield"></i> Usuários
+                </a>
+                <a href="demonstracao.html" class="nav-item" data-role="ADMINISTRADOR">
+                    <i class="fa-solid fa-microchip"></i> Demonstração MySQL
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name">Carregando...</div>
+                        <div class="user-role">...</div>
+                    </div>
+                    <button class="btn btn-outline btn-sm btn-logout" title="Sair do Sistema">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main-wrapper">
+            <header class="header">
+                <h1 class="page-title">
+                    <i class="fa-solid fa-user-shield" style="color: var(--accent-green);"></i> Usuários do Sistema
+                </h1>
+                <div class="header-actions">
+                    <button id="btn-novo-usuario" class="btn btn-primary btn-sm">
+                        <i class="fa-solid fa-user-plus"></i> Novo Usuário
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <div class="table-card">
+                    <div class="table-header">
+                        <div class="table-title">
+                            <i class="fa-solid fa-users-gear" style="color: var(--accent-green);"></i> Contas de Acesso Cadastradas
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome de Exibição</th>
+                                    <th>E-mail (Login)</th>
+                                    <th>Grupo / Nível de Acesso</th>
+                                    <th>Funcionário Vinculado</th>
+                                    <th>Data Cadastro</th>
+                                    <th>Status</th>
+                                    <th style="text-align: right;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-usuarios">
+                                <tr>
+                                    <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 32px;">
+                                        <i class="fa-solid fa-spinner fa-spin"></i> Carregando usuários...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL DE USUÁRIO -->
+    <div id="modal-usuario" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-usr-titulo">Novo Usuário do Sistema</h3>
+                <button type="button" class="btn-close" onclick="fecharModalUsr()">&times;</button>
+            </div>
+            <form id="form-usuario">
+                <div class="modal-body">
+                    <input type="hidden" id="usr-id">
+
+                    <div class="form-group">
+                        <label class="form-label" for="usr-nome">Nome Completo *</label>
+                        <input type="text" id="usr-nome" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="usr-email">E-mail de Login *</label>
+                        <input type="email" id="usr-email" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="usr-senha" id="label-usr-senha">Senha de Acesso (Mínimo 6 caracteres) *</label>
+                        <input type="password" id="usr-senha" class="form-control" placeholder="••••••••" minlength="6">
+                        <small id="help-usr-senha" style="color: var(--text-muted); display: none;">Deixe em branco caso não queira alterar a senha atual.</small>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="usr-grupo">Grupo de Permissões *</label>
+                            <select id="usr-grupo" class="form-control" required>
+                                <option value="">Selecione o grupo...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="usr-funcionario">Vincular a Funcionário</label>
+                            <select id="usr-funcionario" class="form-control">
+                                <option value="">Nenhum vínculo (Conta do Sistema)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="group-usr-ativo" style="display: none;">
+                        <label class="form-label">
+                            <input type="checkbox" id="usr-ativo" checked> Usuário Ativo
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="fecharModalUsr()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-floppy-disk"></i> Salvar Usuário
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        checkAuth(['ADMINISTRADOR']);
+
+        const modalUsr = document.getElementById('modal-usuario');
+        function fecharModalUsr() { modalUsr.classList.remove('active'); }
+
+        async function carregarSelectsUsuario() {
+            try {
+                const [grupos, funcs] = await Promise.all([
+                    apiFetch('/usuarios/grupos'),
+                    apiFetch('/funcionarios')
+                ]);
+
+                const selGrupo = document.getElementById('usr-grupo');
+                selGrupo.innerHTML = '<option value="">Selecione o grupo...</option>' + 
+                    grupos.map(g => `<option value="${g.id_grupo}">${g.nome} - ${g.descricao}</option>`).join('');
+
+                const selFunc = document.getElementById('usr-funcionario');
+                selFunc.innerHTML = '<option value="">Nenhum vínculo (Conta do Sistema)</option>' + 
+                    funcs.map(f => `<option value="${f.id_funcionario}">${f.nome} (${f.cargo})</option>`).join('');
+            } catch (err) {
+                console.error('Erro ao carregar opções:', err);
+            }
+        }
+
+        async function carregarUsuarios() {
+            const tbody = document.getElementById('tabela-usuarios');
+            try {
+                const data = await apiFetch('/usuarios');
+                if (!data) return;
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 32px;">Nenhum usuário cadastrado.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.map(u => `
+                    <tr>
+                        <td>#${u.id_usuario}</td>
+                        <td><strong>${u.nome}</strong></td>
+                        <td>${u.email}</td>
+                        <td>
+                            <span class="badge ${u.grupo_nome === 'ADMINISTRADOR' ? 'badge-danger' : 'badge-info'}">
+                                ${u.grupo_nome}
+                            </span>
+                        </td>
+                        <td>${u.funcionario_nome || '<span style="color: var(--text-muted);">Não vinculado</span>'}</td>
+                        <td>${formatData(u.data_criacao)}</td>
+                        <td>
+                            <span class="badge ${u.ativo ? 'badge-success' : 'badge-danger'}">
+                                ${u.ativo ? 'ATIVO' : 'INATIVO'}
+                            </span>
+                        </td>
+                        <td style="text-align: right; white-space: nowrap;">
+                            <button class="btn btn-outline btn-sm" onclick="abrirEdicao(${u.id_usuario})" title="Editar">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button class="btn btn-sm ${u.ativo ? 'btn-danger' : 'btn-primary'}" onclick="alternarStatus(${u.id_usuario})" title="${u.ativo ? 'Desativar' : 'Ativar'}">
+                                <i class="fa-solid ${u.ativo ? 'fa-ban' : 'fa-check'}"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--accent-red); padding: 24px;">${err.message}</td></tr>`;
+            }
+        }
+
+        document.getElementById('btn-novo-usuario').addEventListener('click', () => {
+            document.getElementById('form-usuario').reset();
+            document.getElementById('usr-id').value = '';
+            document.getElementById('usr-senha').required = true;
+            document.getElementById('label-usr-senha').textContent = 'Senha de Acesso (Mínimo 6 caracteres) *';
+            document.getElementById('help-usr-senha').style.display = 'none';
+            document.getElementById('modal-usr-titulo').textContent = 'Cadastrar Novo Usuário';
+            document.getElementById('group-usr-ativo').style.display = 'none';
+            carregarSelectsUsuario();
+            modalUsr.classList.add('active');
+        });
+
+        async function abrirEdicao(id) {
+            try {
+                await carregarSelectsUsuario();
+                const usuarios = await apiFetch('/usuarios');
+                const u = usuarios.find(x => x.id_usuario === id);
+                if (!u) return;
+
+                document.getElementById('usr-id').value = u.id_usuario;
+                document.getElementById('usr-nome').value = u.nome;
+                document.getElementById('usr-email').value = u.email;
+                document.getElementById('usr-senha').required = false;
+                document.getElementById('usr-senha').value = '';
+                document.getElementById('label-usr-senha').textContent = 'Nova Senha (Opcional)';
+                document.getElementById('help-usr-senha').style.display = 'block';
+
+                document.getElementById('usr-grupo').value = u.id_grupo;
+                document.getElementById('usr-funcionario').value = u.id_funcionario || '';
+                document.getElementById('usr-ativo').checked = !!u.ativo;
+
+                document.getElementById('modal-usr-titulo').textContent = `Editar Usuário #${u.id_usuario}`;
+                document.getElementById('group-usr-ativo').style.display = 'block';
+                modalUsr.classList.add('active');
+            } catch (err) {
+                alert('Erro ao carregar dados do usuário: ' + err.message);
+            }
+        }
+
+        document.getElementById('form-usuario').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('usr-id').value;
+            const payload = {
+                nome: document.getElementById('usr-nome').value,
+                email: document.getElementById('usr-email').value,
+                id_grupo: parseInt(document.getElementById('usr-grupo').value),
+                id_funcionario: document.getElementById('usr-funcionario').value ? parseInt(document.getElementById('usr-funcionario').value) : null
+            };
+
+            const senha = document.getElementById('usr-senha').value;
+            if (senha) payload.senha = senha;
+
+            try {
+                if (id) {
+                    payload.ativo = document.getElementById('usr-ativo').checked;
+                    await apiFetch(`/usuarios/${id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(payload)
+                    });
+                    alert('Usuário atualizado com sucesso!');
+                } else {
+                    await apiFetch('/usuarios', {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                    alert('Usuário cadastrado com sucesso! Senha protegida via bcrypt.');
+                }
+
+                fecharModalUsr();
+                carregarUsuarios();
+            } catch (err) {
+                alert('Erro: ' + err.message);
+            }
+        });
+
+        async function alternarStatus(id) {
+            if (!confirm('Deseja realmente alterar o status deste usuário?')) return;
+            try {
+                await apiFetch(`/usuarios/${id}/status`, { method: 'PATCH' });
+                carregarUsuarios();
+            } catch (err) {
+                alert('Erro: ' + err.message);
+            }
+        }
+
+        carregarUsuarios();
+    </script>
+</body>
+</html>

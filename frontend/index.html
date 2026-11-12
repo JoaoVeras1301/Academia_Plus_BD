@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academia+ | Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-dumbbell"></i>
+                </div>
+                <div class="brand-title">Academia<span>+</span></div>
+            </div>
+
+            <nav class="nav-menu">
+                <div class="nav-section-title">Principal</div>
+                <a href="index.html" class="nav-item active">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
+                <a href="pages/alunos.html" class="nav-item">
+                    <i class="fa-solid fa-users"></i> Alunos
+                </a>
+                <a href="pages/planos.html" class="nav-item">
+                    <i class="fa-solid fa-layer-group"></i> Planos
+                </a>
+                <a href="pages/matriculas.html" class="nav-item">
+                    <i class="fa-solid fa-id-card"></i> Matrículas
+                </a>
+                <a href="pages/financeiro.html" class="nav-item">
+                    <i class="fa-solid fa-receipt"></i> Financeiro
+                </a>
+
+                <div class="nav-section-title" data-role="ADMINISTRADOR">Gestão & Auditoria</div>
+                <a href="pages/funcionarios.html" class="nav-item" data-role="ADMINISTRADOR">
+                    <i class="fa-solid fa-user-tie"></i> Funcionários
+                </a>
+                <a href="pages/usuarios.html" class="nav-item" data-role="ADMINISTRADOR">
+                    <i class="fa-solid fa-user-shield"></i> Usuários
+                </a>
+                <a href="pages/demonstracao.html" class="nav-item" data-role="ADMINISTRADOR">
+                    <i class="fa-solid fa-microchip"></i> Demonstração MySQL
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name">Carregando...</div>
+                        <div class="user-role">...</div>
+                    </div>
+                    <button class="btn btn-outline btn-sm btn-logout" title="Sair do Sistema">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="main-wrapper">
+            <header class="header">
+                <h1 class="page-title">
+                    <i class="fa-solid fa-gauge-high" style="color: var(--accent-green);"></i> Visão Geral da Academia
+                </h1>
+                <div class="header-actions">
+                    <a href="pages/matriculas.html" class="btn btn-primary btn-sm">
+                        <i class="fa-solid fa-plus"></i> Nova Matrícula
+                    </a>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <!-- CARDS DE INDICADORES (CONSULTA REAL AO MYSQL) -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">Alunos Ativos</span>
+                            <div class="metric-icon icon-green">
+                                <i class="fa-solid fa-user-check"></i>
+                            </div>
+                        </div>
+                        <div class="metric-value" id="count-alunos">...</div>
+                        <div class="metric-subtitle">Consultado via tabela alunos</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">Funcionários Ativos</span>
+                            <div class="metric-icon icon-blue">
+                                <i class="fa-solid fa-user-tie"></i>
+                            </div>
+                        </div>
+                        <div class="metric-value" id="count-funcionarios">...</div>
+                        <div class="metric-subtitle">Equipe cadastrada no MySQL</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">Matrículas Ativas</span>
+                            <div class="metric-icon icon-purple">
+                                <i class="fa-solid fa-address-card"></i>
+                            </div>
+                        </div>
+                        <div class="metric-value" id="count-matriculas">...</div>
+                        <div class="metric-subtitle">Contratos vigentes</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">Mensalidades no Prazo</span>
+                            <div class="metric-icon icon-amber">
+                                <i class="fa-solid fa-clock"></i>
+                            </div>
+                        </div>
+                        <div class="metric-value" id="count-pendentes">...</div>
+                        <div class="metric-subtitle">A vencer no mês</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">Mensalidades em Atraso</span>
+                            <div class="metric-icon icon-red">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                        </div>
+                        <div class="metric-value" id="count-atrasadas">...</div>
+                        <div class="metric-subtitle">Vencimento &lt; CURDATE()</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">Receita do Mês</span>
+                            <div class="metric-icon icon-green">
+                                <i class="fa-solid fa-brazilian-real-sign"></i>
+                            </div>
+                        </div>
+                        <div class="metric-value" id="valor-receita">...</div>
+                        <div class="metric-subtitle">Soma de pagamentos quitados</div>
+                    </div>
+                </div>
+
+                <!-- TABELA DE MATRÍCULAS RECENTES -->
+                <div class="table-card">
+                    <div class="table-header">
+                        <div class="table-title">
+                            <i class="fa-solid fa-bolt" style="color: var(--accent-green);"></i> Últimas Matrículas Registradas
+                        </div>
+                        <a href="pages/matriculas.html" class="btn btn-outline btn-sm">
+                            Ver Todas as Matrículas <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Cód. Matrícula</th>
+                                    <th>Aluno</th>
+                                    <th>Plano</th>
+                                    <th>Data de Início</th>
+                                    <th>Valor Contratado</th>
+                                    <th>Situação</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-recentes-matriculas">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 32px;">
+                                        <i class="fa-solid fa-spinner fa-spin"></i> Carregando dados reais do MySQL...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academia+ | Planos e Mensalidades</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-dumbbell"></i>
+                </div>
+                <div class="brand-title">Academia<span>+</span></div>
+            </div>
+
+            <nav class="nav-menu">
+                <div class="nav-section-title">Principal</div>
+                <a href="../index.html" class="nav-item">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
+                <a href="alunos.html" class="nav-item">
+                    <i class="fa-solid fa-users"></i> Alunos
+                </a>
+                <a href="planos.html" class="nav-item active">
+                    <i class="fa-solid fa-layer-group"></i> Planos
+                </a>
+                <a href="matriculas.html" class="nav-item">
+                    <i class="fa-solid fa-id-card"></i> Matrículas
+                </a>
+                <a href="financeiro.html" class="nav-item">
+                    <i class="fa-solid fa-receipt"></i> Financeiro
+                </a>
+
+                <div class="nav-section-title" data-role="ADMINISTRADOR">Gestão & Auditoria</div>
+                <a href="funcionarios.html" class="nav-item" data-role="ADMINISTRADOR">
+                    <i class="fa-solid fa-user-tie"></i> Funcionários
+                </a>
+                <a href="usuarios.html" class="nav-item" data-role="ADMINISTRADOR">
+                    <i class="fa-solid fa-user-shield"></i> Usuários
+                </a>
+                <a href="demonstracao.html" class="nav-item" data-role="ADMINISTRADOR">
+                    <i class="fa-solid fa-microchip"></i> Demonstração MySQL
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name">Carregando...</div>
+                        <div class="user-role">...</div>
+                    </div>
+                    <button class="btn btn-outline btn-sm btn-logout" title="Sair do Sistema">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main-wrapper">
+            <header class="header">
+                <h1 class="page-title">
+                    <i class="fa-solid fa-layer-group" style="color: var(--accent-green);"></i> Planos Disponíveis
+                </h1>
+                <div class="header-actions">
+                    <button id="btn-novo-plano" class="btn btn-primary btn-sm" data-role="ADMINISTRADOR">
+                        <i class="fa-solid fa-plus"></i> Novo Plano
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <div class="table-card">
+                    <div class="table-header">
+                        <div class="table-title">
+                            <i class="fa-solid fa-tags" style="color: var(--accent-green);"></i> Catálogo de Assinaturas
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome do Plano</th>
+                                    <th>Duração (Meses)</th>
+                                    <th>Valor Mensal</th>
+                                    <th>Valor Total Contrato</th>
+                                    <th>Descrição / Benefícios</th>
+                                    <th>Status</th>
+                                    <th style="text-align: right;" data-role="ADMINISTRADOR">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-planos">
+                                <tr>
+                                    <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 32px;">
+                                        <i class="fa-solid fa-spinner fa-spin"></i> Carregando planos...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL DE PLANO -->
+    <div id="modal-plano" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-plano-titulo">Cadastrar Novo Plano</h3>
+                <button type="button" class="btn-close" onclick="fecharModalPlano()">&times;</button>
+            </div>
+            <form id="form-plano">
+                <div class="modal-body">
+                    <input type="hidden" id="plano-id">
+
+                    <div class="form-group">
+                        <label class="form-label" for="plano-nome">Nome do Plano *</label>
+                        <input type="text" id="plano-nome" class="form-control" placeholder="Ex: Plano Semestral VIP" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="plano-duracao">Duração (Meses) *</label>
+                            <input type="number" id="plano-duracao" class="form-control" min="1" max="36" placeholder="Ex: 6" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="plano-valor">Valor Mensal (R$) *</label>
+                            <input type="number" id="plano-valor" class="form-control" step="0.01" min="1" placeholder="Ex: 95.00" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="plano-descricao">Descrição / Benefícios</label>
+                        <textarea id="plano-descricao" class="form-control" rows="3" placeholder="Benefícios inclusos..."></textarea>
+                    </div>
+
+                    <div class="form-group" id="group-plano-ativo" style="display: none;">
+                        <label class="form-label">
+                            <input type="checkbox" id="plano-ativo" checked> Plano Ativo para Novas Matrículas
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="fecharModalPlano()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-floppy-disk"></i> Salvar Plano
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        const modalPlano = document.getElementById('modal-plano');
+        function fecharModalPlano() { modalPlano.classList.remove('active'); }
+
+        async function carregarPlanos() {
+            const tbody = document.getElementById('tabela-planos');
+            const { usuario } = getSession();
+            const isAdmin = (usuario?.grupo || '').toUpperCase() === 'ADMINISTRADOR';
+
+            try {
+                const data = await apiFetch('/planos');
+                if (!data) return;
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 32px;">Nenhum plano cadastrado.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.map(p => {
+                    const totalContrato = p.duracao_meses * p.valor;
+                    const acoesHtml = isAdmin ? `
+                        <td style="text-align: right; white-space: nowrap;">
+                            <button class="btn btn-outline btn-sm" onclick="abrirEdicao(${p.id_plano})" title="Editar">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button class="btn btn-sm ${p.ativo ? 'btn-danger' : 'btn-primary'}" onclick="alternarStatus(${p.id_plano})" title="${p.ativo ? 'Desativar' : 'Ativar'}">
+                                <i class="fa-solid ${p.ativo ? 'fa-ban' : 'fa-check'}"></i>
+                            </button>
+                        </td>
+                    ` : '';
+
+                    return `
+                        <tr>
+                            <td>#${p.id_plano}</td>
+                            <td><strong>${p.nome}</strong></td>
+                            <td>${p.duracao_meses} mês(es)</td>
+                            <td><strong>${formatMoeda(p.valor)}</strong></td>
+                            <td><span style="color: var(--accent-green); font-weight: 700;">${formatMoeda(totalContrato)}</span></td>
+                            <td>${p.descricao || '-'}</td>
+                            <td>
+                                <span class="badge ${p.ativo ? 'badge-success' : 'badge-danger'}">
+                                    ${p.ativo ? 'ATIVO' : 'INATIVO'}
+                                </span>
+                            </td>
+                            ${acoesHtml}
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--accent-red); padding: 24px;">${err.message}</td></tr>`;
+            }
+        }
+
+        document.getElementById('btn-novo-plano').addEventListener('click', () => {
+            document.getElementById('form-plano').reset();
+            document.getElementById('plano-id').value = '';
+            document.getElementById('modal-plano-titulo').textContent = 'Cadastrar Novo Plano';
+            document.getElementById('group-plano-ativo').style.display = 'none';
+            modalPlano.classList.add('active');
+        });
+
+        async function abrirEdicao(id) {
+            try {
+                const p = await apiFetch(`/planos/${id}`);
+                if (!p) return;
+
+                document.getElementById('plano-id').value = p.id_plano;
+                document.getElementById('plano-nome').value = p.nome;
+                document.getElementById('plano-duracao').value = p.duracao_meses;
+                document.getElementById('plano-valor').value = p.valor;
+                document.getElementById('plano-descricao').value = p.descricao || '';
+                document.getElementById('plano-ativo').checked = !!p.ativo;
+
+                document.getElementById('modal-plano-titulo').textContent = `Editar Plano #${p.id_plano}`;
+                document.getElementById('group-plano-ativo').style.display = 'block';
+                modalPlano.classList.add('active');
+            } catch (err) {
+                alert('Erro ao buscar dados do plano: ' + err.message);
+            }
+        }
+
+        document.getElementById('form-plano').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('plano-id').value;
+            const payload = {
+                nome: document.getElementById('plano-nome').value,
+                duracao_meses: document.getElementById('plano-duracao').value,
+                valor: document.getElementById('plano-valor').value,
+                descricao: document.getElementById('plano-descricao').value
+            };
+
+            try {
+                if (id) {
+                    payload.ativo = document.getElementById('plano-ativo').checked;
+                    await apiFetch(`/planos/${id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(payload)
+                    });
+                    alert('Plano atualizado com sucesso!');
+                } else {
+                    await apiFetch('/planos', {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                    alert('Plano cadastrado com sucesso!');
+                }
+
+                fecharModalPlano();
+                carregarPlanos();
+            } catch (err) {
+                alert('Erro: ' + err.message);
+            }
+        });
+
+        async function alternarStatus(id) {
+            if (!confirm('Deseja realmente alterar a disponibilidade deste plano?')) return;
+            try {
+                await apiFetch(`/planos/${id}/status`, { method: 'PATCH' });
+                carregarPlanos();
+            } catch (err) {
+                alert('Erro: ' + err.message);
+            }
+        }
+
+        carregarPlanos();
+    </script>
+</body>
+</html>
