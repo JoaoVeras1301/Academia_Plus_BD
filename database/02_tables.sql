@@ -145,8 +145,11 @@ CREATE TABLE `pagamentos` (
     `data_pagamento` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `forma_pagamento` ENUM('DINHEIRO', 'CARTAO_CREDITO', 'CARTAO_DEBITO', 'PIX', 'BOLETO') NOT NULL,
     `observacao` VARCHAR(255) NULL,
+    `id_usuario` INT NULL,
     CONSTRAINT `fk_pagamento_mensalidade` FOREIGN KEY (`id_mensalidade`) 
-        REFERENCES `mensalidades` (`id_mensalidade`) ON UPDATE CASCADE ON DELETE RESTRICT
+        REFERENCES `mensalidades` (`id_mensalidade`) ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT `fk_pagamento_usuario` FOREIGN KEY (`id_usuario`) 
+        REFERENCES `usuarios` (`id_usuario`) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------
